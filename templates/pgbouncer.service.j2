@@ -6,7 +6,7 @@ Requires=pgbouncer@%i.socket
 [Service]
 Type=notify
 User=postgres
-ExecStart=/usr/local/bin/pgbouncer {{ pgbouncer_conf_file }}
+ExecStart=/usr/sbin/pgbouncer {{ pgbouncer_conf_file }}
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 

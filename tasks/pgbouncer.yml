@@ -43,14 +43,6 @@
     mode: 0644
   when: ansible_os_family == "Debian"
 
-- name: Divert pgbouncer main configuration file {{ pgbouncer_conf_file }}
-  command: dpkg-divert --quiet --local --divert {{ pgbouncer_conf_dir }}.dpkg-divert --rename {{ pgbouncer_conf_file }}
-  args:
-    creates: "{{ pgbouncer_conf_file }}.dpkg-divert"
-  when:
-    - _pgbouncer_install.changed
-    - ansible_os_family == "Debian"
-
 - name: Create pgbouncer configuration file
   template:
     src: pgbouncer.ini.j2
@@ -61,14 +53,6 @@
   notify:
     - Reload pgbouncer
 
-- name: Divert pgbouncer hba file {{ pgbouncer_auth_hba_file }}
-  command: dpkg-divert --quiet --local --divert {{ pgbouncer_auth_hba_file }}.dpkg-divert --rename {{ pgbouncer_auth_hba_file }}
-  args:
-    creates: "{{ pgbouncer_auth_hba_file }}.dpkg-divert"
-  when:
-    - _pgbouncer_install.changed
-    - ansible_os_family == "Debian"
-
 - name: Create pgbouncer hba file {{ pgbouncer_auth_hba_file }}
   template:
     src: pgbouncer_hba.conf.j2
@@ -78,12 +62,6 @@
     mode: 0640
   notify:
     - Reload pgbouncer
-
-- name: Divert pgbouncer user list file {{ pgbouncer_conf_dir }}/userlist.txt
-  command: dpkg-divert --quiet --local --divert {{ pgbouncer_conf_dir }}/userlist.txt.dpkg-divert --rename {{ pgbouncer_conf_dir }}/userlist.txt
-  args:
-    creates: "{{ pgbouncer_conf_dir }}/userlist.txt.dpkg-divert"
-  when: ansible_os_family == "Debian"
 
 - name: Add users to userlist.txt
   copy:
@@ -98,6 +76,13 @@
       {% endfor %}
   notify:
     - Reload pgbouncer
+
+- name: Ensure old pgbouncer service is disabled
+  service:
+    name: "pgbouncer"
+    enabled: false
+    daemon_reload: true
+    state: stopped
 
 - name: Ensure pgbouncer service is enabled
   service:

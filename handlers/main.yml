@@ -1,14 +1,16 @@
 ---
 - name: Restart pgbouncer
   service:
-    name: pgbouncer
+    name: "pgbouncer@{{ item }}"
     state: restarted
   become: true
+  loop: "{{ pgbouncer_service_names }}"
 
 # Note: we are using "service restart" because "service reload" hangs on Centos 7
 # for unknown reasons. Something is wrong with SystemD service config file.
 - name: Reload pgbouncer
   service:
-    name: pgbouncer
+    name: "pgbouncer@{{ item }}"
     state: restarted
   become: true
+  loop: "{{ pgbouncer_service_names }}"

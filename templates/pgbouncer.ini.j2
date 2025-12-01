@@ -48,8 +48,9 @@
 ;;; Administrative settings
 ;;;
 
-{% if pgbouncer_logfile is defined %} logfile = {{ pgbouncer_logfile }} {% endif %%}
-{% if pgbouncer_pidfile is defined %} pidfile = {{ pgbouncer_pidfile }} {% endif %%}
+{% if pgbouncer_logfile is defined %} logfile = {{ pgbouncer_logfile }} {% endif %}
+
+{% if pgbouncer_pidfile is defined and pgbouncer_pidfile != '' %} pidfile = {{ pgbouncer_pidfile }} {% endif %}
 ;;;
 ;;; Where to wait for clients
 ;;;
