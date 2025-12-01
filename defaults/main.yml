@@ -143,3 +143,7 @@ pgbouncer_dns_nxdomain_ttl: 15
 ### Random stuff
 ###
 pgbouncer_disable_pqexec: 0
+
+pgbouncer_service_names: 
+  - 1
+  - 2

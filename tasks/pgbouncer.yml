@@ -16,6 +16,26 @@
     - "{{ pgbouncer_log_dir }}"
     - "{{ pgbouncer_pid_dir }}"
 
+- name: Create pgbouncer service file
+  template:
+    src: pgbouncer.service.j2
+    dest: /lib/systemd/system/pgbouncer@.service
+    owner: "{{ pgbouncer_user }}"
+    group: "{{ pgbouncer_group }}"
+    mode: 0600
+  notify:
+    - Reload pgbouncer
+
+- name: Create pgbouncer socket file
+  template:
+    src: pgbouncer.socket.j2
+    dest: /lib/systemd/system/pgbouncer@.socket
+    owner: "{{ pgbouncer_user }}"
+    group: "{{ pgbouncer_group }}"
+    mode: 0600
+  notify:
+    - Reload pgbouncer
+
 - name: Create systemd tmpfiles configuration
   template:
     src: tmpfiles.d_pgbouncer.conf.j2
@@ -81,16 +101,19 @@
 
 - name: Ensure pgbouncer service is enabled
   service:
-    name: pgbouncer
+    name: "pgbouncer@{{ item }}"
     enabled: true
+  loop: "{{ pgbouncer_service_names }}"
 
 - name: Ensure pgbouncer is running
   service:
-    name: pgbouncer
+    name: "pgbouncer@{{ item }}"
     state: started
+  loop: "{{ pgbouncer_service_names }}"
 
 - name: Configure logrotate | pgbouncer
   template:
     src: "etc_logrotate.d_pgbouncer.j2"
     dest: "/etc/logrotate.d/pgbouncer"
     mode: 0644
+  when: pgbouncer_logfile is defined and pgbouncer_pidfile is defined

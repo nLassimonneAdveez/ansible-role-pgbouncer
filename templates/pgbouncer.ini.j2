@@ -48,9 +48,8 @@
 ;;; Administrative settings
 ;;;
 
-logfile = {{ pgbouncer_logfile }}
-pidfile = {{ pgbouncer_pidfile }}
-
+{% if pgbouncer_logfile is defined %} logfile = {{ pgbouncer_logfile }} {% endif %%}
+{% if pgbouncer_pidfile is defined %} pidfile = {{ pgbouncer_pidfile }} {% endif %%}
 ;;;
 ;;; Where to wait for clients
 ;;;
@@ -304,7 +303,7 @@ sbuf_loopcnt = {{ pgbouncer_sbuf_loopcnt }}
 max_packet_size = {{ pgbouncer_max_packet_size }}
 
 ;; Set SO_REUSEPORT socket option
-;so_reuseport = 0
+so_reuseport = 1
 
 ;; networking options, for info: man 7 tcp
 
