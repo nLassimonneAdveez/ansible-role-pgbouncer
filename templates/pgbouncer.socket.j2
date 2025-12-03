@@ -2,10 +2,12 @@
 Description=sockets for PgBouncer
 
 [Socket]
-ListenStream={{ pgbouncer_listen_port }}
+ListenStream=0.0.0.0:{{ pgbouncer_listen_port }}
+ListenStream=[::]:{{ pgbouncer_listen_port }}
 ListenStream=%i
 ListenStream=/tmp/.s.PGSQL.%i
 
+BindIPv6Only=ipv6-only
 ReusePort=true
 
 [Install]
