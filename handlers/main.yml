@@ -1,16 +1,20 @@
 ---
+# Unit file changes only; drops the client connections of each instance
 - name: Restart pgbouncer
-  service:
+  systemd:
     name: "pgbouncer@{{ item }}"
     state: restarted
+    daemon_reload: true
   become: true
   loop: "{{ pgbouncer_service_names }}"
+  # unit files are not created in check mode
+  ignore_errors: "{{ ansible_check_mode }}"
 
-# Note: we are using "service restart" because "service reload" hangs on Centos 7
-# for unknown reasons. Something is wrong with SystemD service config file.
+# SIGHUP: reloads pgbouncer.ini, hba and userlist without dropping connections
 - name: Reload pgbouncer
   service:
     name: "pgbouncer@{{ item }}"
-    state: restarted
+    state: reloaded
   become: true
   loop: "{{ pgbouncer_service_names }}"
+  ignore_errors: "{{ ansible_check_mode }}"

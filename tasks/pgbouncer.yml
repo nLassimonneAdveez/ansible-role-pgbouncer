@@ -24,7 +24,7 @@
     group: "{{ pgbouncer_group }}"
     mode: 0600
   notify:
-    - Reload pgbouncer
+    - Restart pgbouncer
 
 - name: Create pgbouncer socket file
   template:
@@ -34,7 +34,7 @@
     group: "{{ pgbouncer_group }}"
     mode: 0600
   notify:
-    - Reload pgbouncer
+    - Restart pgbouncer
 
 - name: Create systemd tmpfiles configuration
   template:
@@ -89,12 +89,15 @@
     name: "pgbouncer@{{ item }}"
     enabled: true
   loop: "{{ pgbouncer_service_names }}"
+  # unit files are not created in check mode
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Ensure pgbouncer is running
   service:
     name: "pgbouncer@{{ item }}"
     state: started
   loop: "{{ pgbouncer_service_names }}"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Configure logrotate | pgbouncer
   template:

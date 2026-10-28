@@ -10,6 +10,7 @@
     weekly
     rotate 5
     postrotate
-        /bin/kill -HUP `cat {{ pgbouncer_pidfile }} 2>/dev/null` 2> /dev/null || true
+        # SIGHUP makes every pgbouncer@ instance reopen its logfile
+        systemctl kill -s HUP 'pgbouncer@*.service' 2> /dev/null || true
     endscript
 }
